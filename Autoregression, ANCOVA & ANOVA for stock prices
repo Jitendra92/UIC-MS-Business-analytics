@@ -1,0 +1,51 @@
+rm(list=ls())  
+infile<-"DataForAnalysis.csv"
+
+mdy.stock <- read.csv(infile, header = TRUE, sep = ",")
+#AutoRegression
+head(mdy.stock$RORt.Pct[2:length(mdy.stock$RORt.Pct)])
+RORt <- mdy.stock$RORt.Pct[2:length(mdy.stock$RORt.Pct)]
+ar.1 <- arima(RORt, order=c(1,0,0))
+ar.1
+AIC.ar.1 <- AIC(ar.1)
+AIC.ar.1
+BIC.ar.1 <- BIC(ar.1)
+BIC.ar.1
+RSS.ar.1 <- ar.1$sigma2*(length(ar.1$residuals)-1)
+RSS.ar.1
+
+#ANOVA
+head(mdy.stock$Weekday[2:length(mdy.stock$Weekday)])
+weekday.anova <- mdy.stock$Weekday[2:length(mdy.stock$Weekday)]
+length(weekday.anova)
+length(RORt)
+anova.1 <- aov(RORt ~ weekday.anova)
+AIC.anova <- AIC(anova.1)
+AIC.anova
+BIC.anova <- BIC(anova.1)
+BIC.anova
+anova.1
+RSS.anova <- anova(anova.1)["Residuals", "Sum Sq"] 
+RSS.anova
+
+#ANCOVA
+head(mdy.stock$RORt.1[1:length(mdy.stock$RORt.1)])
+head(mdy.stock$RORt.1[3:length(mdy.stock$RORt.1)])
+head(mdy.stock$RORt.Pct[3:length(mdy.stock$RORt.Pct)])
+head(mdy.stock$Weekday[3:length(mdy.stock$Weekday)])
+RORt.ancova <- mdy.stock$RORt.Pct[3:length(mdy.stock$RORt.Pct)]
+weekday.ancova <- mdy.stock$Weekday[3:length(mdy.stock$Weekday)]
+RORtlag1.ancova <- mdy.stock$RORt.1[3:length(mdy.stock$RORt.1)]
+length(weekday.ancova)
+length(RORt.ancova)
+length(RORtlag1.ancova)
+ancova.1 <- aov(RORt.ancova ~ weekday.ancova + RORtlag1.ancova)
+AIC.ancova <- AIC(ancova.1)
+AIC.ancova
+BIC.ancova <- BIC(ancova.1)
+BIC.ancova
+ancova.1
+RSS.ancova <- anova(ancova.1)["Residuals", "Sum Sq"] 
+RSS.ancova
+
+
